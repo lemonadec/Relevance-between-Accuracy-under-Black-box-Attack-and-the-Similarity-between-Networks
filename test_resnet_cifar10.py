@@ -30,10 +30,12 @@ def test_accuracy(model):
     correct, total = 0, 0
     with torch.no_grad():
         for images, labels in testloader:
+            images = images.to(device)
+            labels = labels.to(device)
             output = model(images)
             _, predict = torch.max(output.data, 1)
             correct += (predict == labels).sum().item()
-            total += labels.size[0]
+            total += labels.size(0)
     model.train()
     return correct / total
 
@@ -43,16 +45,17 @@ optimizer = torch.optim.SGD(model.parameters(), lr, momentum=0.9, weight_decay=0
 for epoch in range(num_epochs):
     total_loss = 0
     for i, (images, labels) in enumerate(trainloader):
-        images.to(device)
-        labels.to(device)
+        images = images.to(device)
+        labels = labels.to(device)
         out = model(images)
         loss = crit(out, labels)
-        total_loss += loss
+        total_loss += loss.item()
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
     if epoch + 1 == 80 or epoch + 1 == 120:
         for param_group in optimizer.param_groups:
             param_group['lr'] /= 10
-    print("Epoch {}: training loss:{:.4f} test accuracy:{:.3f}".format(epoch + 1,
-                                                                       total_loss.item()))
+    print("Epoch {}: training loss:{:.4f} test accuracy:{:.3f}".format
+          (epoch + 1, total_loss, test_accuracy(model)))
+torch.save(model.state_dict(), 'testmodel_resnet_cifar.ckpt')
