@@ -18,7 +18,7 @@ correct, total = 0, 0
 for i, (images, labels) in enumerate(testloader):
     images = images.to(device)
     labels = labels.to(device)
-    adv_examples = advattack.PGD(images, labels, model, 10, 0.03, 0.001)
+    adv_examples = advattack.PGD(images, labels, model, 20, 0.03, 0.005)
     output = model(adv_examples)
     _, predict = torch.max(output.data, 1)
     correct += (predict == labels).sum().item()

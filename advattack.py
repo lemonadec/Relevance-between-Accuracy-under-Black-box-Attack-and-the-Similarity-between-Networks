@@ -16,7 +16,7 @@ def PGD(clean_images, labels, model, iternum, eps, stepsize):
         adv_images += step
         adv_images = torch.max(adv_images, clean_images + eps)
         adv_images = torch.min(adv_images, clean_images - eps)
-        adv_images = torch.min(adv_images, 255 * torch.ones(adv_images.size()))
-        adv_images = torch.max(adv_images, torch.zeros(adv_images.size()))
+        adv_images = torch.min(adv_images, (255 * torch.ones(adv_images.size())).type_as(adv_images))
+        adv_images = torch.max(adv_images, (torch.zeros(adv_images.size())).type_as(adv_images))
 
     return adv_images
