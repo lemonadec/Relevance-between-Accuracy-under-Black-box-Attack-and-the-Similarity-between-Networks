@@ -21,9 +21,9 @@ preprocess = tv.transforms.Compose([
     tv.transforms.RandomCrop(32),
     tv.transforms.ToTensor()
 ])
-trainingset = tv.datasets.CIFAR10("data/", train=True,
+trainingset = tv.datasets.CIFAR10("../data/", train=True,
                                   transform=preprocess, download=True)
-testset = tv.datasets.CIFAR10("data/", train=False,
+testset = tv.datasets.CIFAR10("../data/", train=False,
                               transform=tv.transforms.ToTensor(), download=True)
 trainloader = torch.utils.data.DataLoader(trainingset, batchsize, shuffle=True)
 testloader = torch.utils.data.DataLoader(testset, batchsize, shuffle=False)
