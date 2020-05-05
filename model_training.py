@@ -30,7 +30,7 @@ testloader = torch.utils.data.DataLoader(testset, batchsize, shuffle=False)
 
 for model_index in range(training_model_num):
     crit = torch.nn.CrossEntropyLoss()
-    model = resnet.Resnet_18_CIFAR10().to(device)
+    model = resnet.Resnet_20_CIFAR10().to(device)
     optimizer = torch.optim.SGD(model.parameters(), lr, momentum=0.9, weight_decay=0.0001)
     model_save_path = "model{}.pt".format(model_index + start_index)
     for epoch in range(num_epochs):

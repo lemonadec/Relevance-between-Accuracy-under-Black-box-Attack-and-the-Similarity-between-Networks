@@ -26,9 +26,9 @@ class residualBlock(nn.Module):
         return x
 
 
-class Resnet_18_CIFAR10(nn.Module):
+class Resnet_20_CIFAR10(nn.Module):
     def __init__(self):
-        super(Resnet_18_CIFAR10, self).__init__()
+        super(Resnet_20_CIFAR10, self).__init__()
         self.conv = nn.Conv2d(3, 16, 3, padding=1)
         self.bn = nn.BatchNorm2d(16)
         self.relu = nn.ReLU()

@@ -25,7 +25,7 @@ testset = tv.datasets.CIFAR10("data/", train=False,
                               transform=tv.transforms.ToTensor(), download=True)
 testloader = torch.utils.data.DataLoader(testset, batchsize, shuffle=False)
 testloader2 = torch.utils.data.DataLoader(testset, batchsize, shuffle=False)
-model = resnet.Resnet_18_CIFAR10().to(device)
+model = resnet.Resnet_20_CIFAR10().to(device)
 # Using a test Resnet model. If the file not exist, please run test_resnet_cifar10 to train
 # a test model
 model.load_state_dict(torch.load("testmodel_resnet_cifar.ckpt", map_location=device))
