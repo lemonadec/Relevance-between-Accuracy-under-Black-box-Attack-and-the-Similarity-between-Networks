@@ -1,6 +1,5 @@
 __pycache__
 .vscode
 data
-models
 Adv_examples.pt
 testmodel_resnet_cifar.ckpt
