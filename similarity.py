@@ -30,7 +30,7 @@ def LR(X, Y):
     """
     X, Y = X.numpy(), Y.numpy()
     n = X.shape[0]
-    QY = orth(Y.T)
+    QY = orth(Y)
     R2_LR = norm(QY.T @ X)**2 / norm(X)**2
     return R2_LR
 
