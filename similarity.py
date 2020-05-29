@@ -48,10 +48,101 @@ def CCA(X, Y):
     X, Y = X.numpy(), Y.numpy()
     n = X.shape[0]
     p1 = X.shape[1]
-    QX, QY = orth(X.T), orth(Y.T)
+    QX, QY = orth(X), orth(Y)
     R2_CCA = norm(QY.T @ QX)**2 / p1
     return R2_CCA
 
+def CCA_rou(X, Y):
+    """
+    :param X: nxp1 tensor of activations of p1 neurons for n examples
+    :param Y: nxp2 tensor of activations of p2 neurons for n examples
+    :return: float, the CCA index of X and Y
+    
+    similar to standard CCA, the only difference is the norm used in calculating R2_CCA
+    """
+    X, Y = X.numpy(), Y.numpy()
+    n = X.shape[0]
+    p1 = X.shape[1]
+    QX, QY = orth(X), orth(Y)
+    # nuclear norm
+    _, cal_norm, _ = svd(QY.T @ QX)
+    R2_CCA = cal_norm.sum() / p1
+    return R2_CCA
+
+def SVCCA(X, Y, epsilon = 0.98):
+    """
+    :param X: nxp1 tensor of activations of p1 neurons for n examples
+    :param Y: nxp2 tensor of activations of p2 neurons for n examples
+    :epsilon: float, threshold to truncate Tx and Ty
+    :return: float, the linear regression index of X and Y
+    
+    here we use truncated Ux and Uy to represent UxTx and UyTy
+    """
+    X, Y = X.numpy(), Y.numpy()
+    Ux, Sx, _ = svd(X)
+    Sx = Sx.cumsum()/Sx.sum()
+    for i,j in enumerate(Sx):
+        if j>epsilon:
+            tx=i+1
+            break
+    Ux = Ux[:,:tx]
+    Uy, Sy, _ = svd(Y)
+    Sy = Sy.cumsum()/Sy.sum()
+    for i,j in enumerate(Sy):
+        if j>epsilon:
+            ty=i+1
+            break
+    Uy = Uy[:,:ty]
+    cal_svcca = norm(Uy.T @ Ux)**2 / min(tx, ty)
+    return cal_svcca
+
+def SVCCA_rou(X, Y, epsilon = 0.98):
+    """
+    :param X: nxp1 tensor of activations of p1 neurons for n examples
+    :param Y: nxp2 tensor of activations of p2 neurons for n examples
+    :epsilon: float, threshold to truncate Tx and Ty
+    :return: float, the linear regression index of X and Y
+    
+    similar to standard SVCCA, the only difference is the norm used in cal_svcca
+    """
+    X, Y = X.numpy(), Y.numpy()
+    Ux, Sx, _ = svd(X)
+    Sx = Sx.cumsum()/Sx.sum()
+    for i,j in enumerate(Sx):
+        if j>epsilon:
+            tx=i+1
+            break
+    Ux = Ux[:,:tx]
+    Uy, Sy, _ = svd(Y)
+    Sy = Sy.cumsum()/Sy.sum()
+    for i,j in enumerate(Sy):
+        if j>epsilon:
+            ty=i+1
+            break
+    Uy = Uy[:,:ty]
+    _, cal_norm, _ = svd(Uy.T @ Ux)
+    cal_svcca = cal_norm.sum() / min(tx, ty)
+    return cal_svcca
+
+def PWCCA(X, Y):
+    X, Y = X.numpy(), Y.numpy()
+    L_11 = X.T @ X
+    L_12 = X.T @ Y
+    L_22 = Y.T @ Y
+    L_11_U, L_11_S, L_11_V = svd(L_11)
+    L_22_U, L_22_S, L_22_V = svd(L_22)
+    L_11_inv, L_22_inv = L_11_U@np.diag(L_11_S**(-1/2))@L_11_V, L_22_U@np.diag(L_22_S**(-1/2))@L_22_V
+    L = L_11_inv @ L_12 @ L_22_inv
+    U, R, V = svd(L)
+    H = U.T @ L_11_inv @ X.T
+    alpha_Q = abs(H @ X)
+    alpha = np.array([alpha_Q[i,:].sum() for i in range(alpha_Q.shape[0])])
+    cal_pwcca = 0
+    c = min(X.shape[1], Y.shape[1])
+    for i in range(c):
+        cal_pwcca += alpha[i]*R[i]
+    cal_pwcca /= alpha.sum()
+    return cal_pwcca
 
 def HSIC(X, Y):
     """
