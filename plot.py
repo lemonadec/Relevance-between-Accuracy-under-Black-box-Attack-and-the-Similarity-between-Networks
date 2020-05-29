@@ -6,6 +6,7 @@ import torch
 from matplotlib import pyplot as plt
 import advattack as adv
 import os
+plt.switch_backend('agg')
 
 
 def plot_similarity_vs_acc(index_func, std_model, model_list, save_path=None):
@@ -13,7 +14,7 @@ def plot_similarity_vs_acc(index_func, std_model, model_list, save_path=None):
     CIFAR10 test set"""
     # Load test data
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    batchsize = 500
+    batchsize = 1000
     testset = tv.datasets.CIFAR10("data/", train=False, transform=tv.transforms.ToTensor(), download=True)
     testloader = torch.utils.data.DataLoader(testset, batchsize, shuffle=False)
     testimage, testlabel = iter(testloader).next()
@@ -43,17 +44,17 @@ def plot_similarity_vs_acc(index_func, std_model, model_list, save_path=None):
         model_feature.load_state_dict(model.state_dict())
         output = model_feature(testimage)
         feature = preprocess(model_feature.get_feature(8))
-        sim_list.append(index_func(std_feature, feature))
+        sim_list.append(index_func(std_feature, feature).item())
     # Ploting
     accuracy, similarity = np.array(acc_list), np.array(sim_list)
-    plt.plot(accuracy, similarity, 'o')
+    plt.scatter(accuracy, similarity)
     if save_path:
         plt.savefig(save_path)
     plt.show()
 
 
 if __name__ == "__main__":
-    device = torch.device('cuda'watch -n 1 nvidia-smi if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     std_model = resnet.Resnet_20_CIFAR10().to(device)
     model_list = []
     os.chdir("models")
@@ -65,4 +66,4 @@ if __name__ == "__main__":
         else:
             std_model.load_state_dict(torch.load(path, map_location=device))
     os.chdir("..")
-    plot_similarity_vs_acc(similarity.CKA, std_model, model_list)
+    plot_similarity_vs_acc(similarity.LR, std_model, model_list, save_path="fig1.PNG")

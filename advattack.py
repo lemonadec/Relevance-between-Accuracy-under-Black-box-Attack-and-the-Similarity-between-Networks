@@ -19,6 +19,7 @@ def PGD(clean_images, labels, model, iternum, eps, stepsize):
         adv_images.detach()
         adv_images.requires_grad = False
         adv_images += step
-        adv_images = torch.max(adv_images, torch.max(clean_images - eps, lowerbound)[0])
-        adv_images = torch.min(adv_images, torch.min(clean_images + eps, upperbound)[0])
+        adv_images = torch.max(adv_images, torch.max(clean_images - eps, lowerbound))
+        adv_images = torch.min(adv_images, torch.min(clean_images + eps, upperbound))
+        torch.cuda.empty_cache()
     return adv_images.data

@@ -4,6 +4,7 @@ import numpy as np
 from scipy.linalg import orth, norm, svd
 
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 def CKA(x, y):
     """ calculating the CKA index of two feature
     Argument:
@@ -12,6 +13,7 @@ def CKA(x, y):
     CKA_result(float): CKA index between x and y."""
     n = x.shape[0]
     H = torch.eye(n, n) - 1 / n
+    H = H.to(device)
     X, Y = x @ x.T, y @ y.T
     CKA_result = torch.trace(X @ H @ Y @ H) / \
         torch.sqrt(torch.trace(X @ H @ X @ H) * torch.trace(Y @ H @ Y @ H))
@@ -28,6 +30,7 @@ def LR(X, Y):
     we use orth() directly, which uses the SVD method
     Assume the features have been prepossessed to center the columns
     """
+    X, Y = X.cpu(), Y.cpu()
     X, Y = X.numpy(), Y.numpy()
     n = X.shape[0]
     QY = orth(Y)
@@ -45,6 +48,7 @@ def CCA(X, Y):
     we use orth() directly, which uses the SVD method
     Assume the features have been prepossessed to center the columns
     """
+    X, Y = X.cpu(), Y.cpu()
     X, Y = X.numpy(), Y.numpy()
     p1 = X.shape[1]
     QX, QY = orth(X), orth(Y)
