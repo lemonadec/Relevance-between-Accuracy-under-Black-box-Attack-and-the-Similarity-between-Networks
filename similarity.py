@@ -1,8 +1,7 @@
 # implements different similarity indexes
 import torch
 import numpy as np
-from scipy.linalg import orth, norm
-from numpy.linalg import svd
+from scipy.linalg import orth, norm, svd
 
 
 def CKA(x, y):
