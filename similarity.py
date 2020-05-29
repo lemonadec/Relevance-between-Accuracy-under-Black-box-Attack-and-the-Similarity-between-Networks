@@ -2,6 +2,7 @@
 import torch
 import numpy as np
 from scipy.linalg import orth, norm
+from numpy.linalg import svd
 
 
 def CKA(x, y):
