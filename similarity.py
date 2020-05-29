@@ -29,7 +29,6 @@ def LR(X, Y):
     Assume the features have been prepossessed to center the columns
     """
     X, Y = X.numpy(), Y.numpy()
-    n = X.shape[0]
     QY = orth(Y.T)
     R2_LR = norm(QY.T @ X)**2 / norm(X)**2
     return R2_LR
@@ -46,7 +45,6 @@ def CCA(X, Y):
     Assume the features have been prepossessed to center the columns
     """
     X, Y = X.numpy(), Y.numpy()
-    n = X.shape[0]
     p1 = X.shape[1]
     QX, QY = orth(X.T), orth(Y.T)
     R2_CCA = norm(QY.T @ QX)**2 / p1
@@ -65,11 +63,12 @@ def HSIC(X, Y):
     n = X.shape[0]
     R_HSIC = norm(Y.T @ X) ** 2 / (n-1)**2
     return R_HSIC
-    
-    
-#dists2plane, removezeros, find_max_match, maxmatch 全都是wlw的index的函数，要求similarity，只需要调用maxmatch函数就可以了
+
+
+# dists2plane, removezeros, find_max_match, maxmatch 全都是wlw的index的函数，要求similarity，只需要调用maxmatch函数就可以了
 
 _ZERO = 1e-16
+
 
 def dists2plane(X, Y):
     """
@@ -86,6 +85,7 @@ def dists2plane(X, Y):
     norm = np.linalg.norm(X_t, axis=0)
     return dist / norm
 
+
 def remove_zeros(X):
     """
     Remove zero-norm vectors
@@ -99,6 +99,7 @@ def remove_zeros(X):
     norm_X = np.linalg.norm(X, axis=1)
     non_zero = np.where(norm_X > _ZERO)[0]
     return X[non_zero], non_zero
+
 
 def find_maximal_match(X, Y, eps, has_purge=False):
     """
@@ -165,7 +166,8 @@ def find_maximal_match(X, Y, eps, has_purge=False):
 
     return idx_X, idx_Y
 
-def maxmatch(mat0,mat1,epsilon=0.5):
+
+def maxmatch(mat0, mat1, epsilon=0.5):
     # fix random seed
     np.random.seed(0)
     # aliases
@@ -176,7 +178,7 @@ def maxmatch(mat0,mat1,epsilon=0.5):
     # reshape
     mat0 = mat0.numpy()  # 原来是tensor
     mat1 = mat1.numpy()
-    
+
     mat0 = mat0[:nb_samples, ...]
     mat1 = mat1[:nb_samples, ...]
 
@@ -187,7 +189,7 @@ def maxmatch(mat0,mat1,epsilon=0.5):
     mat1 = mat1.reshape([mat1.shape[0], -1])
     assert mat0.shape[1] == mat1.shape[1], 'Check the sizes of two sets'
 
-    #tic = time.time()
+    # tic = time.time()
     ms = 0
     for iter in range(sample_iter):
         sample_idx = np.random.choice(mat0.shape[1], sample_ndim, replace=False)
@@ -198,8 +200,8 @@ def maxmatch(mat0,mat1,epsilon=0.5):
         mms = float(len(idx_X) + len(idx_Y)) / (len(X) + len(Y))
         ms = ms + mms
 
-    ms = ms / sample_iter #这里稍微改了一点论文里的东西，相当于把激活向量映射到一个10000维的子空间上，再去看他们是否有match（不然太大了）
+    ms = ms / sample_iter  # 这里稍微改了一点论文里的东西，相当于把激活向量映射到一个10000维的子空间上，再去看他们是否有match（不然太大了）
 
-    #toc = time.time()
+    # toc = time.time()
 
     return ms
