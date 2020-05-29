@@ -268,7 +268,7 @@ def maxmatch(mat0, mat1, epsilon=0.5):
     np.random.seed(0)
     # aliases
     nb_samples = 128  # batch size=128
-    sample_ndim = 10000  # default
+    sample_ndim = 5000  # default
     sample_iter = 16  # default
 
     # reshape
