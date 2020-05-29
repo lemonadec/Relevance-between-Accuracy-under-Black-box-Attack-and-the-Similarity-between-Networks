@@ -42,8 +42,8 @@ def plot_similarity_vs_acc(index_func, std_model, model_list, save_path=None):
     for model in model_list:
         model_feature.load_state_dict(model.state_dict())
         output = model_feature(testimage)
-        model_feature = preprocess(model_feature.get_feature(8))
-        sim_list.append(index_func(std_feature, model_feature))
+        feature = preprocess(model_feature.get_feature(8))
+        sim_list.append(index_func(std_feature, feature))
     # Ploting
     accuracy, similarity = np.array(acc_list), np.array(sim_list)
     plt.plot(accuracy, similarity, 'o')
@@ -53,7 +53,7 @@ def plot_similarity_vs_acc(index_func, std_model, model_list, save_path=None):
 
 
 if __name__ == "__main__":
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda'watch -n 1 nvidia-smi if torch.cuda.is_available() else 'cpu')
     std_model = resnet.Resnet_20_CIFAR10().to(device)
     model_list = []
     os.chdir("models")
