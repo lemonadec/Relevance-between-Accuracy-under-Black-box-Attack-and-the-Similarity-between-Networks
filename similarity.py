@@ -162,7 +162,7 @@ def HSIC(X, Y):
 
 
 # dists2plane, removezeros, find_max_match, maxmatch 全都是wlw的index的函数，要求similarity，只需要调用maxmatch函数就可以了
-
+#reference: https://github.com/MeckyWu/subspace-match
 _ZERO = 1e-16
 
 
