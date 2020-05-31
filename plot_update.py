@@ -35,7 +35,7 @@ def plot_similarity_vs_acc(std_model, model_list):
     
     print("generating...")
     adv_images = adv.PGD(testimage, testlabel, std_model, iternum=10, eps=1/32, stepsize=1/128)
-    np.save('save_x', adv_images.numpy())
+    np.save('save_x', adv_images.cpu().numpy())
     
     #adv_images = torch.from_numpy(np.load('save_x.npy'))
     print("done")
@@ -44,7 +44,8 @@ def plot_similarity_vs_acc(std_model, model_list):
     
     acc_list = []
     for model in model_list:
-        output = model(adv_images)
+        with torch.no_grad():
+            output = model(adv_images)
         _, predict = torch.max(output.data, 1)
         correct = (predict == testlabel).sum().item()
         acc_list.append(correct/batchsize)
@@ -61,31 +62,38 @@ def plot_similarity_vs_acc(std_model, model_list):
     
 
     #used to test maxmatch
-    model_feature = resnet.Resnet_20_CIFAR10_feature().to(device)
-    model_feature.load_state_dict(std_model.state_dict())
-    output = model_feature(testimage)
-    std_feature = []
-    for j in range(3):
-        std_feature.append(model_feature.get_feature(j+6))
-    for j in range(3): # 8 block features
-        print("block ",j+6)
-        sim_list = []
-        for model in model_list:
-            model_feature.load_state_dict(model.state_dict())
-            output = model_feature(testimage)
-            feature = model_feature.get_feature(j+6)  #get_feature
-            sim_list.append(similarity.maxmatch(std_feature[j], feature,0.8))#try 0.1,0.2,...,0.5
-        # Ploting
-        accuracy, similar = np.array(acc_list), np.array(sim_list)
-        plt.cla()
-        plt.scatter(accuracy, similar)
-        plt.savefig("maxmatch "+"epsilon=08 "+str(j+6))
-    
+    # model_feature = resnet.Resnet_20_CIFAR10_feature().to(device)
+    # model_feature.load_state_dict(std_model.state_dict())
+    # with torch.no_grad():
+    #     output = model_feature(testimage)
+    # std_feature = []
+    # for j in range(3):
+    #     std_feature.append(model_feature.get_feature(j+6))
+    # for j in range(3): # 8 block features
+    #     print("block ",j+6)
+    #     sim_list = []
+    #     for model in model_list:
+    #         model_feature.load_state_dict(model.state_dict())
+    #         with torch.no_grad():
+    #             output = model_feature(testimage)
+    #         feature = model_feature.get_feature(j+6)  #get_feature
+    #         sim_list.append(similarity.maxmatch(std_feature[j], feature,0.8))#try 0.1,0.2,...,0.5
+    #     # Ploting
+    #     accuracy, similar = np.array(acc_list), np.array(sim_list)
+    #     try:
+    #         plt.cla()
+    #         plt.scatter(accuracy, similar)
+    #         plt.savefig("maxmatch "+"epsilon=08 "+str(j+6))
+    #     except:
+    #         plt.switch_backend('agg')
+    #         plt.scatter(accuracy, similar)
+    #         plt.savefig("maxmatch "+"epsilon=08 "+str(j+6))
     #used to test the first 8 indices
     std_feature = []
     model_feature = resnet.Resnet_20_CIFAR10_feature().to(device)
     model_feature.load_state_dict(std_model.state_dict())
-    output = model_feature(testimage)
+    with torch.no_grad():
+        output = model_feature(testimage)
     for j in range(3): # 8 block features
         std_feature.append(preprocess(model_feature.get_feature(j+6)))  # Get the feature after last block
     print("std_model done")
@@ -95,16 +103,20 @@ def plot_similarity_vs_acc(std_model, model_list):
             sim_list = []
             for model in model_list:
                 model_feature.load_state_dict(model.state_dict())
-                output = model_feature(testimage)
+                with torch.no_grad():
+                    output = model_feature(testimage)
                 feature = preprocess(model_feature.get_feature(j+6))
                 sim_list.append(index_func(std_feature[j], feature).item())
             # Ploting
             accuracy, similar = np.array(acc_list), np.array(sim_list)
-            plt.cla()
-            plt.scatter(accuracy, similar)
-            plt.savefig(str(j+6)+' '+str(i))
- 
-
+            try:
+                plt.cla()
+                plt.scatter(accuracy, similar)
+                plt.savefig(str(j+6)+' '+str(i))
+            except:
+                plt.switch_backend('agg')
+                plt.scatter(accuracy, similar)
+                plt.savefig(str(j+6)+' '+str(i))
 if __name__ == "__main__":
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     std_model = resnet.Resnet_20_CIFAR10().to(device)

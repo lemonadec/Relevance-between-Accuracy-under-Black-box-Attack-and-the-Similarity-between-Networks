@@ -63,7 +63,7 @@ def CCA_rou(X, Y):
     
     similar to standard CCA, the only difference is the norm used in calculating R2_CCA
     """
-    X, Y = X.numpy(), Y.numpy()
+    X, Y = X.cpu().numpy(), Y.cpu().numpy()
     n = X.shape[0]
     p1 = X.shape[1]
     QX, QY = orth(X), orth(Y)
@@ -81,7 +81,7 @@ def SVCCA(X, Y, epsilon = 0.98):
     
     here we use truncated Ux and Uy to represent UxTx and UyTy
     """
-    X, Y = X.numpy(), Y.numpy()
+    X, Y = X.cpu().numpy(), Y.cpu().numpy()
     Ux, Sx, _ = svd(X)
     Sx = Sx.cumsum()/Sx.sum()
     for i,j in enumerate(Sx):
@@ -108,7 +108,7 @@ def SVCCA_rou(X, Y, epsilon = 0.98):
     
     similar to standard SVCCA, the only difference is the norm used in cal_svcca
     """
-    X, Y = X.numpy(), Y.numpy()
+    X, Y = X.cpu().numpy(), Y.cpu().numpy()
     Ux, Sx, _ = svd(X)
     Sx = Sx.cumsum()/Sx.sum()
     for i,j in enumerate(Sx):
@@ -128,7 +128,7 @@ def SVCCA_rou(X, Y, epsilon = 0.98):
     return cal_svcca
 
 def PWCCA(X, Y):
-    X, Y = X.numpy(), Y.numpy()
+    X, Y = X.cpu().numpy(), Y.cpu().numpy()
     L_11 = X.T @ X
     L_12 = X.T @ Y
     L_22 = Y.T @ Y
@@ -155,7 +155,7 @@ def HSIC(X, Y):
 
     Assume the features have been prepossessed to center the columns
     """
-    X, Y = X.numpy(), Y.numpy()
+    X, Y = X.cpu().numpy(), Y.cpu().numpy()
     n = X.shape[0]
     R_HSIC = norm(Y.T @ X) ** 2 / (n-1)**2
     return R_HSIC
@@ -272,8 +272,8 @@ def maxmatch(mat0, mat1, epsilon=0.5):
     sample_iter = 16  # default
 
     # reshape
-    mat0 = mat0.numpy()  # 原来是tensor
-    mat1 = mat1.numpy()
+    mat0 = mat0.cpu().numpy()  # 原来是tensor
+    mat1 = mat1.cpu().numpy()
 
     mat0 = mat0[:nb_samples, ...]
     mat1 = mat1[:nb_samples, ...]
