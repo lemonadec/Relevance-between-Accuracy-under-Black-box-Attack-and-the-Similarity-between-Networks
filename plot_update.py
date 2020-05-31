@@ -19,39 +19,29 @@ def get_func():
     yield similarity.PWCCA
     yield similarity.HSIC
 
-def get_path():
-    yield "LR.PNG"
-    yield "CKA.PNG"
-    yield "CCA.PNG"
-    yield "CCA_rou.PNG"
-    yield "SVCCA.PNG"
-    yield "SVCCA_rou.PNG"
-    yield "PWCCA.PNG"
-    yield "HSIC.PNG"
-
 def plot_similarity_vs_acc(std_model, model_list):
     """Plot network similarity vs. accuracy. Test data is 500 images in
     CIFAR10 test set"""
     print("get started")
     # Load test data
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    batchsize = 1000
+    batchsize = 5000
     testset = tv.datasets.CIFAR10("data/", train=False, transform=tv.transforms.ToTensor(), download=True)
     testloader = torch.utils.data.DataLoader(testset, batchsize, shuffle=False)
     testimage, testlabel = iter(testloader).next()
     testimage, testlabel = testimage.to(device), testlabel.to(device)
     # Generate adv. examples
     # the result is saved in "save_x.npy" as a numpy array
-    '''
+    
     print("generating...")
     adv_images = adv.PGD(testimage, testlabel, std_model, iternum=10, eps=1/32, stepsize=1/128)
     np.save('save_x', adv_images.numpy())
-    '''
-    adv_images = torch.from_numpy(np.load('save_x.npy'))
+    
+    #adv_images = torch.from_numpy(np.load('save_x.npy'))
     print("done")
     # Calculate black box attack accuracy
     # the result is saved in "save_acc.npy" as a numpy array
-    '''
+    
     acc_list = []
     for model in model_list:
         output = model(adv_images)
@@ -59,9 +49,9 @@ def plot_similarity_vs_acc(std_model, model_list):
         correct = (predict == testlabel).sum().item()
         acc_list.append(correct/batchsize)
     np.save('save_acc', np.array(acc_list))
-    '''
+    
     # Calculate simlarity index after last layer
-    acc_list = np.load('save_acc.npy').tolist()
+    #acc_list = np.load('save_acc.npy').tolist()
     def preprocess(feature):
         feature = feature.view(batchsize, -1)
         feature -= torch.mean(feature, 0)
@@ -89,7 +79,7 @@ def plot_similarity_vs_acc(std_model, model_list):
         accuracy, similar = np.array(acc_list), np.array(sim_list)
         plt.cla()
         plt.scatter(accuracy, similar)
-        plt.savefig("maxmatch "+"epsilon=08"+str(j+6))
+        plt.savefig("maxmatch "+"epsilon=08 "+str(j+6))
     
     #used to test the first 8 indices
     std_feature = []
