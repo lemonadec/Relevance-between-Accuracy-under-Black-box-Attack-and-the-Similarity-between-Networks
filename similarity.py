@@ -77,7 +77,7 @@ def SVCCA(X, Y, epsilon = 0.98):
     :param X: nxp1 tensor of activations of p1 neurons for n examples
     :param Y: nxp2 tensor of activations of p2 neurons for n examples
     :epsilon: float, threshold to truncate Tx and Ty
-    :return: float, the linear regression index of X and Y
+    :return: float, the SVCCA index of X and Y
     
     here we use truncated Ux and Uy to represent UxTx and UyTy
     """
@@ -104,7 +104,7 @@ def SVCCA_rou(X, Y, epsilon = 0.98):
     :param X: nxp1 tensor of activations of p1 neurons for n examples
     :param Y: nxp2 tensor of activations of p2 neurons for n examples
     :epsilon: float, threshold to truncate Tx and Ty
-    :return: float, the linear regression index of X and Y
+    :return: float, the SVCCA index of X and Y
     
     similar to standard SVCCA, the only difference is the norm used in cal_svcca
     """
@@ -128,6 +128,11 @@ def SVCCA_rou(X, Y, epsilon = 0.98):
     return cal_svcca
 
 def PWCCA(X, Y):
+    """
+    :param X: nxp1 tensor of activations of p1 neurons for n examples
+    :param Y: nxp2 tensor of activations of p2 neurons for n examples
+    :return: float, the PWCCA index of X and Y
+    """
     X, Y = X.cpu().numpy(), Y.cpu().numpy()
     L_11 = X.T @ X
     L_12 = X.T @ Y
