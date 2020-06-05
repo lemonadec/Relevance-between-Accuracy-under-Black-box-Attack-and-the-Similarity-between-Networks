@@ -1,5 +1,8 @@
 the figures result from:
+
 1、maxmatch epsilon=xxx x
-x^th block measured by maxmatch method, here the block number can take teh value of 6,7,8
-2、x y
+x^th block measured by maxmatch method with epsilon=xxx, where the block number can take teh value of 6,7,8
+2、maxmatch x
+x^th block measured by maxmatch method with epsilon=0.5(default value)
+3、x y
 x^th block measured by the y^th index (indices are in the same order as in the index file)
