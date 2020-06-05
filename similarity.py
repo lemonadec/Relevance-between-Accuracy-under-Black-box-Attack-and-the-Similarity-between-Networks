@@ -132,6 +132,8 @@ def PWCCA(X, Y):
     :param X: nxp1 tensor of activations of p1 neurons for n examples
     :param Y: nxp2 tensor of activations of p2 neurons for n examples
     :return: float, the PWCCA index of X and Y
+    
+    here canonical correlations are weighted, which is an improvement over CCA method
     """
     X, Y = X.cpu().numpy(), Y.cpu().numpy()
     L_11 = X.T @ X
